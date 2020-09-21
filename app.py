@@ -1,5 +1,5 @@
-import os, sys
-from flask import Flask, request, abort, jsonify, redirect, session
+import os, sys, json
+from flask import Flask, request, abort, jsonify, redirect, session, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from models import setup_db, Actor, Movie
@@ -11,6 +11,7 @@ from dotenv import load_dotenv, find_dotenv
 
 def create_app(test_config=None):
   app = Flask(__name__)
+  app.secret_key = "SuperSecret"
   setup_db(app)
   CORS(app)
   return app
@@ -20,8 +21,8 @@ oauth = OAuth(APP)
 
 auth0 = oauth.register(
     'auth0',
-    client_id='o5EiBp0MLuqlzwQW9lXeAo3JeZQ4fH8L',
-    client_secret='YOUR_CLIENT_SECRET',  # TODO: Adicionar secret de client
+    client_id='1N0NSObu0BtQ0sMh6CRDcVRnzbqLc1ls',
+    client_secret=os.getenv('AUTH0_SECRET', 'auth0-client-secret'),  # TODO: Adicionar secret de client
     api_base_url='https://dev-ingcvevp.us.auth0.com',
     access_token_url='https://dev-ingcvevp.us.auth0.com/oauth/token',
     authorize_url='https://dev-ingcvevp.us.auth0.com/authorize',
@@ -29,6 +30,10 @@ auth0 = oauth.register(
         'scope': 'openid profile email',
     },
 )
+
+@APP.route('/')
+def home():
+  return render_template('home.html')
 
 @APP.route('/actors')
 def get_actors():
@@ -167,8 +172,8 @@ def delete_movie(id):
 
 @APP.route('/login')
 def login():
-    return auth0.authorize_redirect(redirect_uri='YOUR_CALLBACK_URL')
-
+    return auth0.authorize_redirect(redirect_uri='http://localhost:5000/callback')
+# /server.py
 
 # Here we're using the /callback route.
 @APP.route('/callback')
@@ -185,7 +190,15 @@ def callback_handling():
         'name': userinfo['name'],
         'picture': userinfo['picture']
     }
-    return redirect('/')
+    return redirect('/dashboard')
+
+# /server.py
+
+@APP.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html',
+                           userinfo=session['profile'],
+                           userinfo_pretty=json.dumps(session['jwt_payload'], indent=4))
 
 ###################### Error handlers
 
