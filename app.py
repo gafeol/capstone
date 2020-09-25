@@ -1,5 +1,5 @@
 import os, sys, json
-from flask import Flask, request, abort, jsonify, redirect, session, render_template
+from flask import Flask, request, abort, jsonify, redirect, session, render_template, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from models import setup_db, Actor, Movie
@@ -174,7 +174,14 @@ def delete_movie(id):
 def login():
     callback_url = request.url[:-6] + '/callback'
     return auth0.authorize_redirect(redirect_uri=callback_url)
-# /server.py
+
+@APP.route('/logout')
+def logout():
+    # Clear session stored data
+    session.clear()
+    # Redirect user to logout endpoint
+    params = {'returnTo': url_for('home', _external=True), 'client_id': '1N0NSObu0BtQ0sMh6CRDcVRnzbqLc1ls'}
+    return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
 
 # Here we're using the /callback route.
 @APP.route('/callback')
@@ -185,6 +192,7 @@ def callback_handling():
     userinfo = resp.json()
 
     # Store the user information in flask session.
+    print("JWT ", userinfo)
     session['jwt_payload'] = userinfo
     session['profile'] = {
         'user_id': userinfo['sub'],
