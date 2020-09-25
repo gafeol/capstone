@@ -172,7 +172,8 @@ def delete_movie(id):
 
 @APP.route('/login')
 def login():
-    return auth0.authorize_redirect(redirect_uri='http://localhost:5000/callback')
+    callback_url = request.url[:-6] + '/callback'
+    return auth0.authorize_redirect(redirect_uri=callback_url)
 # /server.py
 
 # Here we're using the /callback route.
