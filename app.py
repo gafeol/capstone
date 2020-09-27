@@ -22,7 +22,7 @@ oauth = OAuth(APP)
 auth0 = oauth.register(
     'auth0',
     client_id='1N0NSObu0BtQ0sMh6CRDcVRnzbqLc1ls',
-    client_secret=os.getenv('AUTH0_SECRET', 'auth0-client-secret'),  # TODO: Adicionar secret de client
+    client_secret=os.getenv('AUTH0_SECRET'),  
     api_base_url='https://dev-ingcvevp.us.auth0.com',
     access_token_url='https://dev-ingcvevp.us.auth0.com/oauth/token',
     authorize_url='https://dev-ingcvevp.us.auth0.com/authorize',
@@ -36,6 +36,7 @@ def home():
   return render_template('home.html')
 
 @APP.route('/actors')
+@requires_auth('read:actor')
 def get_actors():
   try:
     actors = Actor.query.all()
@@ -49,6 +50,7 @@ def get_actors():
     abort(422)
 
 @APP.route('/movies')
+@requires_auth('read:movie')
 def get_movies():
   try:
     movies = Movie.query.all()
@@ -64,6 +66,7 @@ def get_movies():
 ###################### POST routes
 
 @APP.route('/actors', methods=['POST'])
+@requires_auth('add:actor')
 def create_actor():
   try:
     data = request.get_json()
@@ -78,6 +81,7 @@ def create_actor():
     abort(422)
 
 @APP.route('/movies', methods=['POST'])
+@requires_auth('add:movie')
 def create_movie():
   try:
     data = request.get_json()
@@ -94,6 +98,7 @@ def create_movie():
 ###################### PATCH routes
 
 @APP.route('/actors', methods=['PATCH'])
+@requires_auth('modify:actor')
 def patch_actor():
   try:
     data = request.get_json()
@@ -117,6 +122,7 @@ def patch_actor():
     abort(422)
 
 @APP.route('/movies', methods=['PATCH'])
+@requires_auth('modify:movie')
 def patch_movie():
   try:
     data = request.get_json()
@@ -140,6 +146,7 @@ def patch_movie():
 ###################### DELETE routes
 
 @APP.route('/actors/<int:id>', methods=['DELETE']) 
+@requires_auth('delete:actor')
 def delete_actor(id):
   try:
     actor = Actor.query.get(id)
@@ -154,6 +161,7 @@ def delete_actor(id):
     abort(422);
 
 @APP.route('/movies/<int:id>', methods=['DELETE']) 
+@requires_auth('delete:movie')
 def delete_movie(id):
   try:
     movie = Movie.query.get(id)
