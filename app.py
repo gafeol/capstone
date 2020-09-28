@@ -1,12 +1,11 @@
-import os, sys, json
-from flask import Flask, request, abort, jsonify, redirect, session, render_template, url_for
-from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
-from models import setup_db, Actor, Movie
 from auth import AuthError, requires_auth
 from authlib.integrations.flask_client import OAuth
+from flask import Flask, request, abort, jsonify, redirect, session, render_template, url_for
+from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
+from models import setup_db, Actor, Movie
 from six.moves.urllib.parse import urlencode
-from dotenv import load_dotenv, find_dotenv
+import os, sys, json
 
 
 def create_app(test_config=None):
@@ -30,6 +29,15 @@ auth0 = oauth.register(
         'scope': 'openid profile email',
     },
 )
+
+@APP.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Headers',
+                         'Content-Type, Authorization')
+    response.headers.add('Access-Control-Allow-Methods',
+                         'GET,PATCH,POST,PUT,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 @APP.route('/')
 def home():
@@ -180,8 +188,7 @@ def delete_movie(id):
 
 @APP.route('/login')
 def login():
-    callback_url = request.url[:-6] + '/callback'
-    return auth0.authorize_redirect(redirect_uri=callback_url)
+  return redirect("https://dev-ingcvevp.us.auth0.com/authorize?audience=http://127.0.0.1:5000/&response_type=token&client_id=1N0NSObu0BtQ0sMh6CRDcVRnzbqLc1ls&redirect_uri=http://localhost:5000/callback")
 
 @APP.route('/logout')
 def logout():
@@ -191,31 +198,9 @@ def logout():
     params = {'returnTo': url_for('home', _external=True), 'client_id': '1N0NSObu0BtQ0sMh6CRDcVRnzbqLc1ls'}
     return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
 
-# Here we're using the /callback route.
 @APP.route('/callback')
 def callback_handling():
-    # Handles response from token endpoint
-    auth0.authorize_access_token()
-    resp = auth0.get('userinfo')
-    userinfo = resp.json()
-
-    # Store the user information in flask session.
-    print("JWT ", userinfo)
-    session['jwt_payload'] = userinfo
-    session['profile'] = {
-        'user_id': userinfo['sub'],
-        'name': userinfo['name'],
-        'picture': userinfo['picture']
-    }
-    return redirect('/dashboard')
-
-# /server.py
-
-@APP.route('/dashboard')
-def dashboard():
-    return render_template('dashboard.html',
-                           userinfo=session['profile'],
-                           userinfo_pretty=json.dumps(session['jwt_payload'], indent=4))
+    return render_template('dashboard.html')
 
 ###################### Error handlers
 
