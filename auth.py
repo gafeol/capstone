@@ -102,9 +102,7 @@ def requires_auth(permission=''):
         @wraps(f)
         def wrapper(*args, **kwargs):
             token = get_token_auth_header()
-            print("TOKEN", token)
             payload = verify_decode_jwt(token)
-            print("PAYLOAD", payload)
             check_permissions(permission, payload)
             return f(*args, **kwargs)
         return wrapper

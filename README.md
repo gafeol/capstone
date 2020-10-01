@@ -34,3 +34,4 @@ https://dev-ingcvevp.us.auth0.com/authorize?audience=http://127.0.0.1:5000/&resp
 ## DEBUG
 
 - If OAuth is not doing the authentication correctly, check if the AUTH0_SECRET is really accessible by the code.
+- Launch tests with VSCode, otherwise they can't get the envvars

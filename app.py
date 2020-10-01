@@ -158,13 +158,14 @@ def patch_movie():
 def delete_actor(id):
   try:
     actor = Actor.query.get(id)
-    print(actor)
     actor.delete()
     return jsonify({
       'success': True,
       'deleted': actor.json()
     })
   except:
+    if actor is None:
+      abort(404)
     print(sys.exc_info())
     abort(422);
 
@@ -173,22 +174,25 @@ def delete_actor(id):
 def delete_movie(id):
   try:
     movie = Movie.query.get(id)
-    if movie is None:
-      abort(404)
-    print(movie)
     movie.delete()
     return jsonify({
       'success': True,
       'deleted': movie.json()
     })
   except:
+    if movie is None:
+      abort(404)
     print(sys.exc_info())
     abort(422)
 
 
 @APP.route('/login')
 def login():
-  return redirect("https://dev-ingcvevp.us.auth0.com/authorize?audience=http://127.0.0.1:5000/&response_type=token&client_id=1N0NSObu0BtQ0sMh6CRDcVRnzbqLc1ls&redirect_uri=http://localhost:5000/callback")
+  domain = "dev-ingcvevp.us.auth0.com"
+  audience = "http://127.0.0.1:5000/"
+  client_id = "1N0NSObu0BtQ0sMh6CRDcVRnzbqLc1ls"
+  redirect_uri = "http://localhost:5000/callback"
+  return redirect("https://{}/authorize?audience={}&response_type=token&client_id={}&redirect_uri={}".format(domain, audience, client_id, redirect_uri))
 
 @APP.route('/logout')
 def logout():

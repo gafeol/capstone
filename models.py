@@ -45,7 +45,7 @@ class Movie(db.Model):
         db.session.commit()
 
     def delete(self):
-        db.session.remove(self)
+        db.session.delete(self)
         db.session.commit()
     
     def json(self):
@@ -77,7 +77,7 @@ class Actor(db.Model):
         db.session.commit()
 
     def delete(self):
-        db.session.remove(self)
+        db.session.delete(self)
         db.session.commit()
 
     def json(self):
