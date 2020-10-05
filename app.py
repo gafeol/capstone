@@ -76,8 +76,11 @@ def get_movies():
 @APP.route('/actors', methods=['POST'])
 @requires_auth('add:actor')
 def create_actor():
+  data = request.get_json()
+  if data is None:
+    print("data eh NONE aborta 400")
+    abort(400)
   try:
-    data = request.get_json()
     actor = Actor(data.get('name'), data.get('age'), data.get('gender'))
     actor.create()
     return jsonify({
@@ -91,8 +94,10 @@ def create_actor():
 @APP.route('/movies', methods=['POST'])
 @requires_auth('add:movie')
 def create_movie():
+  data = request.get_json()
+  if data is None:
+    abort(400)
   try:
-    data = request.get_json()
     movie = Movie(data.get('title'), data.get('release_date'))
     movie.create()
     return jsonify({
@@ -108,11 +113,11 @@ def create_movie():
 @APP.route('/actors', methods=['PATCH'])
 @requires_auth('modify:actor')
 def patch_actor():
+  data = request.get_json()
+  id = data.get('id', None)
+  if id is None or data is None:
+    abort(400)
   try:
-    data = request.get_json()
-    id = data.get('id', None)
-    if id is None:
-      abort(400)
     actor = Actor.query.get(id)
     if data.get('name'):
       actor.name = data.get('name')
@@ -167,7 +172,7 @@ def delete_actor(id):
     if actor is None:
       abort(404)
     print(sys.exc_info())
-    abort(422);
+    abort(422)
 
 @APP.route('/movies/<int:id>', methods=['DELETE']) 
 @requires_auth('delete:movie')
@@ -210,6 +215,7 @@ def callback_handling():
 
 @APP.errorhandler(400)
 def error_400(error):
+    print("ABORTOU 400")
     return jsonify({
         "success": False,
         "error": 400,

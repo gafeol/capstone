@@ -33,9 +33,9 @@ class Movie(db.Model):
     title = db.Column(db.String, nullable=False)
     release_date = db.Column(db.DateTime, nullable=False)
 
-    def __init__(self, t, rd):
-        self.title = t
-        self.release_date = rd
+    def __init__(self, title, release_date):
+        self.title = title
+        self.release_date = release_date
 
     def create(self):
         db.session.add(self)
