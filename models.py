@@ -7,7 +7,7 @@ import json
 database_name = "capstone"
 database_username = "postgres"
 database_password = "postgres"
-local_db_path = "postgres://{}:{}@{}/{}".format(
+local_db_path = "postgresql://{}:{}@{}/{}".format(
     database_username,
     database_password,
     'localhost:5432',
