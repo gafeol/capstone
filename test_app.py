@@ -101,20 +101,20 @@ class TestCapstone(unittest.TestCase):
         self.assertEqual(len(data['movies']), len(movies))
 
     def test_assistant_cant_create_actor(self):
-        res = self.client().post('/actors', headers={"Authorization": "Bearer {}".format(self.assistant_token)}, json=dict(name="A", age=12, gender="M"))
+        res = self.client().post('/actors', headers={"Authorization": "Bearer {}".format(self.assistant_token)}, json=sample_actor)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 401)
         self.assertFalse(data['success'])
 
     
     def test_director_should_create_actor(self):
-        res = self.client().post('/actors', headers={"Authorization": "Bearer {}".format(self.director_token)}, json=dict(name="A", age=12, gender="M"))
+        res = self.client().post('/actors', headers={"Authorization": "Bearer {}".format(self.director_token)}, json=sample_actor)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 201)
         self.assertTrue(data['success'])
     
     def test_executive_should_create_actor(self):
-        res = self.client().post('/actors', headers={"Authorization": "Bearer {}".format(self.executive_token)}, json=dict(name="A", age=12, gender="M"))
+        res = self.client().post('/actors', headers={"Authorization": "Bearer {}".format(self.executive_token)}, json=sample_actor)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 201)
         self.assertTrue(data['success'])
@@ -129,6 +129,57 @@ class TestCapstone(unittest.TestCase):
         self.assertEqual(res.status_code, 400)
         data = json.loads(res.data)
         self.assertFalse(data['success'])
+    
+    def test_assistant_cant_create_movie(self):
+        res = self.client().post('/movies', headers={"Authorization": "Bearer {}".format(self.assistant_token)}, json=sample_movie)
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 401)
+        self.assertFalse(data['success'])
+
+    
+    def test_director_cant_create_movie(self):
+        res = self.client().post('/movies', headers={"Authorization": "Bearer {}".format(self.director_token)}, json=sample_movie)
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 401)
+        self.assertFalse(data['success'])
+    
+    def test_executive_should_create_movie(self):
+        res = self.client().post('/movies', headers={"Authorization": "Bearer {}".format(self.executive_token)}, json=sample_movie)
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 201)
+        self.assertTrue(data['success'])
+
+        createdId = data['created']
+        movie = Movie.query.get(createdId)
+        self.assertIsNotNone(movie)
+        self.assertEqual(movie.id, createdId)
+
+    def test_incorrect_create_movie(self):
+        res = self.client().post('/movies', headers={"Authorization": "Bearer {}".format(self.executive_token)})
+        self.assertEqual(res.status_code, 400)
+        data = json.loads(res.data)
+        self.assertFalse(data['success'])
+
+    def test_assistant_patch_actor(self):
+        res = self.client().patch('/actors', headers={"Authorization": "Bearer {}".format(self.assistant_token)}, json=sample_actor)
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 401)
+        self.assertFalse(data['success'])
+    
+    def test_director_patch_actor(self):
+        pass
+
+    def test_executive_patch_actor(self):
+        pass
+
+    def test_assistant_patch_movie(self):
+        pass
+    
+    def test_director_patch_movie(self):
+        pass
+
+    def test_executive_patch_movie(self):
+        pass
 
 
 def checkTokens():
