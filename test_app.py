@@ -130,5 +130,31 @@ class TestCapstone(unittest.TestCase):
         data = json.loads(res.data)
         self.assertFalse(data['success'])
 
+
+def checkTokens():
+    err = False
+    if os.getenv("EXECUTIVE_TOKEN") is None:
+        print("EXECUTIVE_TOKEN not found on environment")
+        err = True
+    if os.getenv("DIRECTOR_TOKEN") is None:
+        print("DIRECTOR_TOKEN not found on environment")
+        err = True
+    if os.getenv("ASSISTANT_TOKEN") is None:
+        print("ASSISTANT_TOKEN not found on environment")
+        err = True
+    if err:
+        os.sys.exit(1)
+
 if __name__ == "__main__":
-    unittest.main()
+    try:
+        envFile = open(".flaskenv", "r")
+        for line in envFile:
+            key, value = map(str.strip, line.split('='))
+            os.environ[key] = value
+    except FileNotFoundError:
+        print("File .flaskenv not found!")
+        checkTokens()
+    try:
+        unittest.main()
+    finally:
+        envFile.close()
