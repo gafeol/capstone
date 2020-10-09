@@ -5,7 +5,11 @@ import json
 import os
 import unittest
 from app import create_app, APP
-from models import setup_db, Actor, Movie
+from models import setup_db, Actor, Movie, db
+
+
+sample_actor = dict(name="A", age=12, gender="M")
+sample_movie = dict(title="Lorem", release_date="2020-09-19 19:09:33.77486")
 
 class TestCapstone(unittest.TestCase):
     def setUp(self):
@@ -15,22 +19,25 @@ class TestCapstone(unittest.TestCase):
         database_name = "capstone_test"
         database_username = "postgres"
         database_password = "postgres"
-        self.database_path = "postgres://{}:{}@{}/{}".format(
+        self.database_path = "postgresql://{}:{}@{}/{}".format(
             database_username,
             database_password,
             'localhost:5432',
             database_name)
         setup_db(self.app, self.database_path)
 
+
         with self.app.app_context():
-            upgrade()
+            db.drop_all()
+            db.create_all()
             self.executive_token = os.getenv("EXECUTIVE_TOKEN")
             self.director_token = os.getenv("DIRECTOR_TOKEN")
             self.assistant_token = os.getenv("ASSISTANT_TOKEN")
 
     def tearDown(self):
-        #with self.app.app_context():
-            #downgrade()
+        with self.app.app_context():
+            db.session.rollback()
+            db.session.close()
         pass
 
     def test_assistant_should_get_all_actors(self):
