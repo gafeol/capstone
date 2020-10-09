@@ -78,7 +78,6 @@ def get_movies():
 def create_actor():
   data = request.get_json()
   if data is None:
-    print("data eh NONE aborta 400")
     abort(400)
   try:
     actor = Actor(data.get('name'), data.get('age'), data.get('gender'))
@@ -215,7 +214,6 @@ def callback_handling():
 
 @APP.errorhandler(400)
 def error_400(error):
-    print("ABORTOU 400")
     return jsonify({
         "success": False,
         "error": 400,
