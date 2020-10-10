@@ -194,7 +194,7 @@ def login():
   domain = "dev-ingcvevp.us.auth0.com"
   audience = "http://127.0.0.1:5000/"
   client_id = "1N0NSObu0BtQ0sMh6CRDcVRnzbqLc1ls"
-  redirect_uri = "http://localhost:5000/callback"
+  redirect_uri = request.url_root[:-1] + url_for('callback_handling')
   return redirect("https://{}/authorize?audience={}&response_type=token&client_id={}&redirect_uri={}".format(domain, audience, client_id, redirect_uri))
 
 @APP.route('/logout')
