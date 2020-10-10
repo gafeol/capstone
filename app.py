@@ -10,6 +10,7 @@ import os, sys, json
 
 def create_app(test_config=None):
   app = Flask(__name__)
+  app.secret_key = os.getenv("FLASK_SECRET_KEY")
   setup_db(app)
   CORS(app)
   return app
