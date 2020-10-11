@@ -6,15 +6,15 @@ import os
 import unittest
 from app import create_app, APP
 from models import setup_db, Actor, Movie, db
+from datetime import datetime
 
 
 sample_actor = dict(name="A", age=12, gender="M")
-sample_movie = dict(title="Lorem", release_date="2020-09-19 19:09:33.77486")
+sample_movie = dict(title="Lorem", release_date="2020-09-19 19:09:33.774860")
 
 class TestCapstone(unittest.TestCase):
     def setUp(self):
         self.app = APP 
-        #self.app.config["TESTING"] = True
         self.client = self.app.test_client
         database_name = "capstone_test"
         database_username = "postgres"
@@ -50,7 +50,7 @@ class TestCapstone(unittest.TestCase):
         self.assertIsNotNone(actor)
 
     def test_precreated_movie_exists(self):
-        movie = Movie.query.filter_by(title="Once Upon", release_date="2019-10-04 19:09:33.77486")
+        movie = Movie.query.filter_by(title="Once Upon", release_date="2019-10-04 19:09:33.77486").first()
         self.assertIsNotNone(movie)
 
     def test_assistant_should_get_all_actors(self):
@@ -208,34 +208,82 @@ class TestCapstone(unittest.TestCase):
 
     def test_assistant_cant_patch_movie(self):
         movie = Movie.query.filter_by(title="Once Upon", release_date="2019-10-04 19:09:33.77486").first()
-        res = self.client().patch('/movies', headers={"Authorization": "Bearer {}".format(self.assistant_token)}, json=dict(id=movie.id))
+        new_title = "New Title"
+        new_release_date = "2020-11-04 19:09:33.77486"
+        res = self.client().patch('/movies', headers={"Authorization": "Bearer {}".format(self.assistant_token)}, json=dict(id=movie.id, title=new_title, release_date=new_release_date))
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 401)
         self.assertFalse(data['success'])
     
     def test_director_should_patch_movie(self):
-        pass
+        movie = Movie.query.filter_by(title="Once Upon", release_date="2019-10-04 19:09:33.774860").first()
+        new_title = "New Title"
+        new_release_date = "2020-11-04 19:09:33.774860"
+        res = self.client().patch('/movies', headers={"Authorization": "Bearer {}".format(self.director_token)}, json=dict(id=movie.id, title=new_title, release_date=new_release_date))
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['success'])
+        newMovie = Movie.query.get(movie.id)
+        self.assertEqual(newMovie.title, new_title)
+        self.assertEqual(newMovie.release_date.strftime("%Y-%m-%d %H:%M:%S.%f"), new_release_date)
 
     def test_executive_should_patch_movie(self):
-        pass
+        movie = Movie.query.filter_by(title="Once Upon", release_date="2019-10-04 19:09:33.774860").first()
+        new_title = "New Title"
+        new_release_date = "2020-11-04 19:09:33.774860"
+        res = self.client().patch('/movies', headers={"Authorization": "Bearer {}".format(self.executive_token)}, json=dict(id=movie.id, title=new_title, release_date=new_release_date))
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['success'])
+        newMovie = Movie.query.get(movie.id)
+        self.assertEqual(newMovie.title, new_title)
+        self.assertEqual(newMovie.release_date.strftime("%Y-%m-%d %H:%M:%S.%f"), new_release_date)
 
     def test_assistant_cant_delete_actor(self):
-        pass
+        actor = Actor.query.filter_by(name="Brad", age=45, gender="M").first()
+        self.assertIsNotNone(actor)
+        res = self.client().delete('/actors/{}'.format(actor.id), headers={"Authorization": "Bearer {}".format(self.assistant_token)})
+        self.assertEqual(res.status_code, 401)
     
     def test_director_cant_delete_actor(self):
-        pass
+        actor = Actor.query.filter_by(name="Brad", age=45, gender="M").first()
+        self.assertIsNotNone(actor)
+        res = self.client().delete('/actors/{}'.format(actor.id), headers={"Authorization": "Bearer {}".format(self.director_token)})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['deleted']['id'], actor.id)
 
     def test_executive_should_delete_actor(self):
-        pass
+        actor = Actor.query.filter_by(name="Brad", age=45, gender="M").first()
+        self.assertIsNotNone(actor)
+        res = self.client().delete('/actors/{}'.format(actor.id), headers={"Authorization": "Bearer {}".format(self.executive_token)})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['deleted']['id'], actor.id)
 
     def test_assistant_cant_delete_movie(self):
-        pass
+        movie = Movie.query.filter_by(title="Once Upon", release_date="2019-10-04 19:09:33.77486").first()
+        self.assertIsNotNone(movie)
+        res = self.client().delete('/movies/{}'.format(movie.id), headers={"Authorization": "Bearer {}".format(self.assistant_token)})
+        self.assertEqual(res.status_code, 401)
 
     def test_director_cant_delete_movie(self):
-        pass
+        movie = Movie.query.filter_by(title="Once Upon", release_date="2019-10-04 19:09:33.77486").first()
+        self.assertIsNotNone(movie)
+        res = self.client().delete('/movies/{}'.format(movie.id), headers={"Authorization": "Bearer {}".format(self.director_token)})
+        self.assertEqual(res.status_code, 401)
 
     def test_executive_should_delete_movie(self):
-        pass
+        movie = Movie.query.filter_by(title="Once Upon", release_date="2019-10-04 19:09:33.77486").first()
+        self.assertIsNotNone(movie)
+        res = self.client().delete('/movies/{}'.format(movie.id), headers={"Authorization": "Bearer {}".format(self.executive_token)})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['deleted']['id'], movie.id)
+
+    def test_nonexisting_route(self):
+        res = self.client().get('/nonexisting')
+        self.assertEqual(res.status_code, 404)
 
 def checkTokens():
     err = False
