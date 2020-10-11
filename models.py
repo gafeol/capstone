@@ -21,12 +21,14 @@ setup_db(app)
     binds a flask application and a SQLAlchemy service
 '''
 
+
 def setup_db(app, database_path=database_path):
     app.config["SQLALCHEMY_DATABASE_URI"] = database_path
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
     db.init_app(app)
     Migrate(app, db)
+
 
 class Movie(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -47,16 +49,17 @@ class Movie(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
-    
+
     def json(self):
         return {
             'id': self.id,
             'title': self.title,
             'release_date': self.release_date
         }
-    
+
     def __repr__(self):
         return json.dumps(self.json())
+
 
 class Actor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -87,6 +90,6 @@ class Actor(db.Model):
             'age': self.age,
             'gender': self.gender
         }
-    
+
     def __repr__(self):
         return json.dumps(self.json())
