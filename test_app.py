@@ -12,9 +12,10 @@ from datetime import datetime
 sample_actor = dict(name="A", age=12, gender="M")
 sample_movie = dict(title="Lorem", release_date="2020-09-19 19:09:33.774860")
 
+
 class TestCapstone(unittest.TestCase):
     def setUp(self):
-        self.app = APP 
+        self.app = APP
         self.client = self.app.test_client
         database_name = "capstone_test"
         database_username = "postgres"
@@ -26,7 +27,6 @@ class TestCapstone(unittest.TestCase):
             database_name)
         setup_db(self.app, self.database_path)
 
-
         with self.app.app_context():
             db.drop_all()
             db.create_all()
@@ -37,7 +37,9 @@ class TestCapstone(unittest.TestCase):
 
             self.existing_actor = Actor(name="Brad", age=45, gender="M")
             self.existing_actor.create()
-            self.existing_movie = Movie(title="Once Upon", release_date="2019-10-04 19:09:33.77486")
+            self.existing_movie = Movie(
+                title="Once Upon",
+                release_date="2019-10-04 19:09:33.77486")
             self.existing_movie.create()
 
     def tearDown(self):
@@ -50,13 +52,19 @@ class TestCapstone(unittest.TestCase):
         self.assertIsNotNone(actor)
 
     def test_precreated_movie_exists(self):
-        movie = Movie.query.filter_by(title="Once Upon", release_date="2019-10-04 19:09:33.77486").first()
+        movie = Movie.query.filter_by(
+            title="Once Upon",
+            release_date="2019-10-04 19:09:33.77486").first()
         self.assertIsNotNone(movie)
 
     def test_assistant_should_get_all_actors(self):
         actor = Actor(name="Abls", age=123, gender="M")
         actor.create()
-        res = self.client().get('/actors', headers={"Authorization": "Bearer {}".format(self.assistant_token)})
+        res = self.client().get(
+            '/actors',
+            headers={
+                "Authorization": "Bearer {}".format(
+                    self.assistant_token)})
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
@@ -66,7 +74,11 @@ class TestCapstone(unittest.TestCase):
     def test_director_should_get_all_actors(self):
         actor = Actor(name="Abls", age=123, gender="M")
         actor.create()
-        res = self.client().get('/actors', headers={"Authorization": "Bearer {}".format(self.director_token)})
+        res = self.client().get(
+            '/actors',
+            headers={
+                "Authorization": "Bearer {}".format(
+                    self.director_token)})
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
@@ -76,7 +88,11 @@ class TestCapstone(unittest.TestCase):
     def test_executive_should_get_all_actors(self):
         actor = Actor(name="Abls", age=123, gender="M")
         actor.create()
-        res = self.client().get('/actors', headers={"Authorization": "Bearer {}".format(self.executive_token)})
+        res = self.client().get(
+            '/actors',
+            headers={
+                "Authorization": "Bearer {}".format(
+                    self.executive_token)})
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
@@ -84,9 +100,15 @@ class TestCapstone(unittest.TestCase):
         self.assertEqual(len(data['actors']), len(actors))
 
     def test_assistant_should_get_all_movies(self):
-        movie = Movie(title="Test Title", release_date="2012-04-23 18:25:43.511")
+        movie = Movie(
+            title="Test Title",
+            release_date="2012-04-23 18:25:43.511")
         movie.create()
-        res = self.client().get('/movies', headers={"Authorization": "Bearer {}".format(self.assistant_token)})
+        res = self.client().get(
+            '/movies',
+            headers={
+                "Authorization": "Bearer {}".format(
+                    self.assistant_token)})
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
@@ -94,9 +116,15 @@ class TestCapstone(unittest.TestCase):
         self.assertEqual(len(data['movies']), len(movies))
 
     def test_director_should_get_all_movies(self):
-        movie = Movie(title="Test Title", release_date="2012-04-23 18:25:43.511")
+        movie = Movie(
+            title="Test Title",
+            release_date="2012-04-23 18:25:43.511")
         movie.create()
-        res = self.client().get('/movies', headers={"Authorization": "Bearer {}".format(self.director_token)})
+        res = self.client().get(
+            '/movies',
+            headers={
+                "Authorization": "Bearer {}".format(
+                    self.director_token)})
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
@@ -104,9 +132,15 @@ class TestCapstone(unittest.TestCase):
         self.assertEqual(len(data['movies']), len(movies))
 
     def test_executive_should_get_all_movies(self):
-        movie = Movie(title="Test Title", release_date="2012-04-23 18:25:43.511")
+        movie = Movie(
+            title="Test Title",
+            release_date="2012-04-23 18:25:43.511")
         movie.create()
-        res = self.client().get('/movies', headers={"Authorization": "Bearer {}".format(self.executive_token)})
+        res = self.client().get(
+            '/movies',
+            headers={
+                "Authorization": "Bearer {}".format(
+                    self.executive_token)})
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
@@ -114,20 +148,34 @@ class TestCapstone(unittest.TestCase):
         self.assertEqual(len(data['movies']), len(movies))
 
     def test_assistant_cant_create_actor(self):
-        res = self.client().post('/actors', headers={"Authorization": "Bearer {}".format(self.assistant_token)}, json=sample_actor)
+        res = self.client().post(
+            '/actors',
+            headers={
+                "Authorization": "Bearer {}".format(
+                    self.assistant_token)},
+            json=sample_actor)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 401)
         self.assertFalse(data['success'])
 
-    
     def test_director_should_create_actor(self):
-        res = self.client().post('/actors', headers={"Authorization": "Bearer {}".format(self.director_token)}, json=sample_actor)
+        res = self.client().post(
+            '/actors',
+            headers={
+                "Authorization": "Bearer {}".format(
+                    self.director_token)},
+            json=sample_actor)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 201)
         self.assertTrue(data['success'])
-    
+
     def test_executive_should_create_actor(self):
-        res = self.client().post('/actors', headers={"Authorization": "Bearer {}".format(self.executive_token)}, json=sample_actor)
+        res = self.client().post(
+            '/actors',
+            headers={
+                "Authorization": "Bearer {}".format(
+                    self.executive_token)},
+            json=sample_actor)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 201)
         self.assertTrue(data['success'])
@@ -138,26 +186,44 @@ class TestCapstone(unittest.TestCase):
         self.assertEqual(actor.id, createdId)
 
     def test_incorrect_create_actor(self):
-        res = self.client().post('/actors', headers={"Authorization": "Bearer {}".format(self.executive_token)})
+        res = self.client().post(
+            '/actors',
+            headers={
+                "Authorization": "Bearer {}".format(
+                    self.executive_token)})
         self.assertEqual(res.status_code, 400)
         data = json.loads(res.data)
         self.assertFalse(data['success'])
-    
+
     def test_assistant_cant_create_movie(self):
-        res = self.client().post('/movies', headers={"Authorization": "Bearer {}".format(self.assistant_token)}, json=sample_movie)
+        res = self.client().post(
+            '/movies',
+            headers={
+                "Authorization": "Bearer {}".format(
+                    self.assistant_token)},
+            json=sample_movie)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 401)
         self.assertFalse(data['success'])
 
-    
     def test_director_cant_create_movie(self):
-        res = self.client().post('/movies', headers={"Authorization": "Bearer {}".format(self.director_token)}, json=sample_movie)
+        res = self.client().post(
+            '/movies',
+            headers={
+                "Authorization": "Bearer {}".format(
+                    self.director_token)},
+            json=sample_movie)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 401)
         self.assertFalse(data['success'])
-    
+
     def test_executive_should_create_movie(self):
-        res = self.client().post('/movies', headers={"Authorization": "Bearer {}".format(self.executive_token)}, json=sample_movie)
+        res = self.client().post(
+            '/movies',
+            headers={
+                "Authorization": "Bearer {}".format(
+                    self.executive_token)},
+            json=sample_movie)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 201)
         self.assertTrue(data['success'])
@@ -168,21 +234,40 @@ class TestCapstone(unittest.TestCase):
         self.assertEqual(movie.id, createdId)
 
     def test_incorrect_create_movie(self):
-        res = self.client().post('/movies', headers={"Authorization": "Bearer {}".format(self.executive_token)})
+        res = self.client().post(
+            '/movies',
+            headers={
+                "Authorization": "Bearer {}".format(
+                    self.executive_token)})
         self.assertEqual(res.status_code, 400)
         data = json.loads(res.data)
         self.assertFalse(data['success'])
 
     def test_assistant_cant_patch_actor(self):
         actor = Actor.query.filter_by(name="Brad", age=45, gender="M").first()
-        res = self.client().patch('/actors', headers={"Authorization": "Bearer {}".format(self.assistant_token)}, json=dict(id=actor.id))
+        res = self.client().patch(
+            '/actors',
+            headers={
+                "Authorization": "Bearer {}".format(
+                    self.assistant_token)},
+            json=dict(
+                id=actor.id))
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 401)
         self.assertFalse(data['success'])
-    
+
     def test_director_should_patch_actor(self):
         actor = Actor.query.filter_by(name="Brad", age=45, gender="M").first()
-        res = self.client().patch('/actors', headers={"Authorization": "Bearer {}".format(self.director_token)}, json=dict(id=actor.id, name="NewName", age=22, gender="F"))
+        res = self.client().patch(
+            '/actors',
+            headers={
+                "Authorization": "Bearer {}".format(
+                    self.director_token)},
+            json=dict(
+                id=actor.id,
+                name="NewName",
+                age=22,
+                gender="F"))
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
@@ -195,7 +280,16 @@ class TestCapstone(unittest.TestCase):
 
     def test_executive_should_patch_actor(self):
         actor = Actor.query.filter_by(name="Brad", age=45, gender="M").first()
-        res = self.client().patch('/actors', headers={"Authorization": "Bearer {}".format(self.executive_token)}, json=dict(id=actor.id, name="NewName", age=22, gender="F"))
+        res = self.client().patch(
+            '/actors',
+            headers={
+                "Authorization": "Bearer {}".format(
+                    self.executive_token)},
+            json=dict(
+                id=actor.id,
+                name="NewName",
+                age=22,
+                gender="F"))
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
@@ -207,48 +301,82 @@ class TestCapstone(unittest.TestCase):
         self.assertEqual("F", patched_actor.get('gender'))
 
     def test_assistant_cant_patch_movie(self):
-        movie = Movie.query.filter_by(title="Once Upon", release_date="2019-10-04 19:09:33.77486").first()
+        movie = Movie.query.filter_by(
+            title="Once Upon",
+            release_date="2019-10-04 19:09:33.77486").first()
         new_title = "New Title"
         new_release_date = "2020-11-04 19:09:33.77486"
-        res = self.client().patch('/movies', headers={"Authorization": "Bearer {}".format(self.assistant_token)}, json=dict(id=movie.id, title=new_title, release_date=new_release_date))
+        res = self.client().patch(
+            '/movies',
+            headers={
+                "Authorization": "Bearer {}".format(
+                    self.assistant_token)},
+            json=dict(
+                id=movie.id,
+                title=new_title,
+                release_date=new_release_date))
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 401)
         self.assertFalse(data['success'])
-    
+
     def test_director_should_patch_movie(self):
-        movie = Movie.query.filter_by(title="Once Upon", release_date="2019-10-04 19:09:33.774860").first()
+        movie = Movie.query.filter_by(
+            title="Once Upon",
+            release_date="2019-10-04 19:09:33.774860").first()
         new_title = "New Title"
         new_release_date = "2020-11-04 19:09:33.774860"
-        res = self.client().patch('/movies', headers={"Authorization": "Bearer {}".format(self.director_token)}, json=dict(id=movie.id, title=new_title, release_date=new_release_date))
+        res = self.client().patch(
+            '/movies',
+            headers={
+                "Authorization": "Bearer {}".format(
+                    self.director_token)},
+            json=dict(
+                id=movie.id,
+                title=new_title,
+                release_date=new_release_date))
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
         newMovie = Movie.query.get(movie.id)
         self.assertEqual(newMovie.title, new_title)
-        self.assertEqual(newMovie.release_date.strftime("%Y-%m-%d %H:%M:%S.%f"), new_release_date)
+        self.assertEqual(newMovie.release_date.strftime(
+            "%Y-%m-%d %H:%M:%S.%f"), new_release_date)
 
     def test_executive_should_patch_movie(self):
-        movie = Movie.query.filter_by(title="Once Upon", release_date="2019-10-04 19:09:33.774860").first()
+        movie = Movie.query.filter_by(
+            title="Once Upon",
+            release_date="2019-10-04 19:09:33.774860").first()
         new_title = "New Title"
         new_release_date = "2020-11-04 19:09:33.774860"
-        res = self.client().patch('/movies', headers={"Authorization": "Bearer {}".format(self.executive_token)}, json=dict(id=movie.id, title=new_title, release_date=new_release_date))
+        res = self.client().patch(
+            '/movies',
+            headers={
+                "Authorization": "Bearer {}".format(
+                    self.executive_token)},
+            json=dict(
+                id=movie.id,
+                title=new_title,
+                release_date=new_release_date))
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
         newMovie = Movie.query.get(movie.id)
         self.assertEqual(newMovie.title, new_title)
-        self.assertEqual(newMovie.release_date.strftime("%Y-%m-%d %H:%M:%S.%f"), new_release_date)
+        self.assertEqual(newMovie.release_date.strftime(
+            "%Y-%m-%d %H:%M:%S.%f"), new_release_date)
 
     def test_assistant_cant_delete_actor(self):
         actor = Actor.query.filter_by(name="Brad", age=45, gender="M").first()
         self.assertIsNotNone(actor)
-        res = self.client().delete('/actors/{}'.format(actor.id), headers={"Authorization": "Bearer {}".format(self.assistant_token)})
+        res = self.client().delete('/actors/{}'.format(actor.id),
+                                   headers={"Authorization": "Bearer {}".format(self.assistant_token)})
         self.assertEqual(res.status_code, 401)
-    
+
     def test_director_cant_delete_actor(self):
         actor = Actor.query.filter_by(name="Brad", age=45, gender="M").first()
         self.assertIsNotNone(actor)
-        res = self.client().delete('/actors/{}'.format(actor.id), headers={"Authorization": "Bearer {}".format(self.director_token)})
+        res = self.client().delete('/actors/{}'.format(actor.id),
+                                   headers={"Authorization": "Bearer {}".format(self.director_token)})
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['deleted']['id'], actor.id)
@@ -256,27 +384,37 @@ class TestCapstone(unittest.TestCase):
     def test_executive_should_delete_actor(self):
         actor = Actor.query.filter_by(name="Brad", age=45, gender="M").first()
         self.assertIsNotNone(actor)
-        res = self.client().delete('/actors/{}'.format(actor.id), headers={"Authorization": "Bearer {}".format(self.executive_token)})
+        res = self.client().delete('/actors/{}'.format(actor.id),
+                                   headers={"Authorization": "Bearer {}".format(self.executive_token)})
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['deleted']['id'], actor.id)
 
     def test_assistant_cant_delete_movie(self):
-        movie = Movie.query.filter_by(title="Once Upon", release_date="2019-10-04 19:09:33.77486").first()
+        movie = Movie.query.filter_by(
+            title="Once Upon",
+            release_date="2019-10-04 19:09:33.77486").first()
         self.assertIsNotNone(movie)
-        res = self.client().delete('/movies/{}'.format(movie.id), headers={"Authorization": "Bearer {}".format(self.assistant_token)})
+        res = self.client().delete('/movies/{}'.format(movie.id),
+                                   headers={"Authorization": "Bearer {}".format(self.assistant_token)})
         self.assertEqual(res.status_code, 401)
 
     def test_director_cant_delete_movie(self):
-        movie = Movie.query.filter_by(title="Once Upon", release_date="2019-10-04 19:09:33.77486").first()
+        movie = Movie.query.filter_by(
+            title="Once Upon",
+            release_date="2019-10-04 19:09:33.77486").first()
         self.assertIsNotNone(movie)
-        res = self.client().delete('/movies/{}'.format(movie.id), headers={"Authorization": "Bearer {}".format(self.director_token)})
+        res = self.client().delete('/movies/{}'.format(movie.id),
+                                   headers={"Authorization": "Bearer {}".format(self.director_token)})
         self.assertEqual(res.status_code, 401)
 
     def test_executive_should_delete_movie(self):
-        movie = Movie.query.filter_by(title="Once Upon", release_date="2019-10-04 19:09:33.77486").first()
+        movie = Movie.query.filter_by(
+            title="Once Upon",
+            release_date="2019-10-04 19:09:33.77486").first()
         self.assertIsNotNone(movie)
-        res = self.client().delete('/movies/{}'.format(movie.id), headers={"Authorization": "Bearer {}".format(self.executive_token)})
+        res = self.client().delete('/movies/{}'.format(movie.id),
+                                   headers={"Authorization": "Bearer {}".format(self.executive_token)})
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['deleted']['id'], movie.id)
@@ -284,6 +422,7 @@ class TestCapstone(unittest.TestCase):
     def test_nonexisting_route(self):
         res = self.client().get('/nonexisting')
         self.assertEqual(res.status_code, 404)
+
 
 def checkTokens():
     err = False
@@ -298,6 +437,7 @@ def checkTokens():
         err = True
     if err:
         os.sys.exit(1)
+
 
 if __name__ == "__main__":
     try:
