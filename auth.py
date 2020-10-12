@@ -47,7 +47,8 @@ def check_permissions(permission, payload):
     if permission not in payload.get('permissions', []):
         raise AuthError({
             'code': 'permission_missing',
-            'description': 'The permission ' + permission + ' is not on the payload'
+            'description':
+                'The permission ' + permission + ' is not on the payload'
         }, 401)
     return True
 
@@ -84,7 +85,8 @@ def verify_decode_jwt(token):
         except jwt.JWTClaimsError:
             raise AuthError({
                 'code': 'invalid_claims',
-                'description': 'Incorrect claims. Please, check the audience and issuer.'
+                'description':
+                    'Incorrect claims. Please, check the audience and issuer.'
             }, 401)
         except Exception:
             raise AuthError({
@@ -97,7 +99,8 @@ def verify_decode_jwt(token):
     }, 400)
 
 
-""" Custom decorator that requires Auth0 authentication and checks for required permissions """
+""" Custom decorator that requires Auth0 authentication and checks
+for required permissions """
 
 
 def requires_auth(permission=''):

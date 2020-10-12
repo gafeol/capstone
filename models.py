@@ -71,7 +71,7 @@ class Movie(db.Model):
         }
 
     """ Shorter JSON representation of an object
-        Does not include information about the actors the objects are linked with
+        Does not include information about the linked actors
     """
 
     def shortJson(self):
@@ -123,7 +123,7 @@ class Actor(db.Model):
         }
 
     """ Shorter JSON representation of an object
-        Does not include information about the movies the objects are linked with
+        Does not include information about the linked movies
     """
 
     def shortJson(self):

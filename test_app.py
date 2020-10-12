@@ -368,15 +368,19 @@ class TestCapstone(unittest.TestCase):
     def test_assistant_cant_delete_actor(self):
         actor = Actor.query.filter_by(name="Brad", age=45, gender="M").first()
         self.assertIsNotNone(actor)
-        res = self.client().delete('/actors/{}'.format(actor.id),
-                                   headers={"Authorization": "Bearer {}".format(self.assistant_token)})
+        res = self.client().delete('/actors/{}'.format(
+            actor.id),
+            headers={"Authorization": "Bearer {}".format(
+                self.assistant_token)})
         self.assertEqual(res.status_code, 401)
 
     def test_director_cant_delete_actor(self):
         actor = Actor.query.filter_by(name="Brad", age=45, gender="M").first()
         self.assertIsNotNone(actor)
-        res = self.client().delete('/actors/{}'.format(actor.id),
-                                   headers={"Authorization": "Bearer {}".format(self.director_token)})
+        res = self.client().delete('/actors/{}'.format(
+            actor.id),
+            headers={"Authorization": "Bearer {}".format(
+                self.director_token)})
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['deleted']['id'], actor.id)
@@ -384,8 +388,10 @@ class TestCapstone(unittest.TestCase):
     def test_executive_should_delete_actor(self):
         actor = Actor.query.filter_by(name="Brad", age=45, gender="M").first()
         self.assertIsNotNone(actor)
-        res = self.client().delete('/actors/{}'.format(actor.id),
-                                   headers={"Authorization": "Bearer {}".format(self.executive_token)})
+        res = self.client().delete('/actors/{}'.format(
+            actor.id),
+            headers={"Authorization": "Bearer {}".format(
+                self.executive_token)})
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['deleted']['id'], actor.id)
@@ -395,8 +401,10 @@ class TestCapstone(unittest.TestCase):
             title="Once Upon",
             release_date="2019-10-04 19:09:33.77486").first()
         self.assertIsNotNone(movie)
-        res = self.client().delete('/movies/{}'.format(movie.id),
-                                   headers={"Authorization": "Bearer {}".format(self.assistant_token)})
+        res = self.client().delete('/movies/{}'.format(
+            movie.id),
+            headers={"Authorization": "Bearer {}".format(
+                self.assistant_token)})
         self.assertEqual(res.status_code, 401)
 
     def test_director_cant_delete_movie(self):
@@ -404,8 +412,10 @@ class TestCapstone(unittest.TestCase):
             title="Once Upon",
             release_date="2019-10-04 19:09:33.77486").first()
         self.assertIsNotNone(movie)
-        res = self.client().delete('/movies/{}'.format(movie.id),
-                                   headers={"Authorization": "Bearer {}".format(self.director_token)})
+        res = self.client().delete('/movies/{}'.format(
+            movie.id),
+            headers={"Authorization": "Bearer {}".format(
+                self.director_token)})
         self.assertEqual(res.status_code, 401)
 
     def test_executive_should_delete_movie(self):
@@ -413,8 +423,10 @@ class TestCapstone(unittest.TestCase):
             title="Once Upon",
             release_date="2019-10-04 19:09:33.77486").first()
         self.assertIsNotNone(movie)
-        res = self.client().delete('/movies/{}'.format(movie.id),
-                                   headers={"Authorization": "Bearer {}".format(self.executive_token)})
+        res = self.client().delete('/movies/{}'.format(
+            movie.id),
+            headers={"Authorization": "Bearer {}".format(
+                self.executive_token)})
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['deleted']['id'], movie.id)

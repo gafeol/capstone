@@ -1,6 +1,15 @@
 from auth import AuthError, requires_auth
 from authlib.integrations.flask_client import OAuth
-from flask import Flask, request, abort, jsonify, redirect, session, render_template, url_for
+from flask import (
+    Flask,
+    request,
+    abort,
+    jsonify,
+    redirect,
+    session,
+    render_template,
+    url_for
+)
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from models import setup_db, Actor, Movie
@@ -201,13 +210,16 @@ def delete_movie(id):
 
 @APP.route('/login')
 def login():
+    login_route = auth0_url + '/authorize'
     audience = os.getenv("API_AUDIENCE")
+    response_type = "token"
     client_id = os.getenv("CLIENT_ID")
     redirect_uri = request.url_root[:-1] + url_for('callback_handling')
     return redirect(
-        "{}/authorize?audience={}&response_type=token&client_id={}&redirect_uri={}".format(
-            auth0_url,
+        "{}?audience={}&response_type={}&client_id={}&redirect_uri={}".format(
+            login_route,
             audience,
+            response_type,
             client_id,
             redirect_uri))
 
