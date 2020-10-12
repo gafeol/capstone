@@ -21,13 +21,15 @@ def create_app(test_config=None):
 APP = create_app()
 oauth = OAuth(APP)
 
+auth0_url = 'https://' + os.getenv('AUTH0_DOMAIN')
+
 auth0 = oauth.register(
     'auth0',
-    client_id='1N0NSObu0BtQ0sMh6CRDcVRnzbqLc1ls',
+    client_id=os.getenv("CLIENT_ID"),
     client_secret=os.getenv('AUTH0_SECRET'),
-    api_base_url='https://dev-ingcvevp.us.auth0.com',
-    access_token_url='https://dev-ingcvevp.us.auth0.com/oauth/token',
-    authorize_url='https://dev-ingcvevp.us.auth0.com/authorize',
+    api_base_url=auth0_url,
+    access_token_url=auth0_url + '/oauth/token',
+    authorize_url=auth0_url + '/authorize',
     client_kwargs={
         'scope': 'openid profile email',
     },
@@ -199,13 +201,12 @@ def delete_movie(id):
 
 @APP.route('/login')
 def login():
-    domain = "dev-ingcvevp.us.auth0.com"
-    audience = "http://127.0.0.1:5000/"
-    client_id = "1N0NSObu0BtQ0sMh6CRDcVRnzbqLc1ls"
+    audience = os.getenv("API_AUDIENCE")
+    client_id = os.getenv("CLIENT_ID")
     redirect_uri = request.url_root[:-1] + url_for('callback_handling')
     return redirect(
-        "https://{}/authorize?audience={}&response_type=token&client_id={}&redirect_uri={}".format(
-            domain,
+        "{}/authorize?audience={}&response_type=token&client_id={}&redirect_uri={}".format(
+            auth0_url,
             audience,
             client_id,
             redirect_uri))
@@ -218,7 +219,7 @@ def logout():
         'returnTo': url_for(
             'home',
             _external=True),
-        'client_id': '1N0NSObu0BtQ0sMh6CRDcVRnzbqLc1ls'}
+        'client_id': os.getenv("CLIENT_ID")}
     return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
 
 
