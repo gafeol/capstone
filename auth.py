@@ -96,6 +96,9 @@ def verify_decode_jwt(token):
     }, 400)
 
 
+""" Custom decorator that requires Auth0 authentication and checks for required permissions """
+
+
 def requires_auth(permission=''):
     def requires_auth_decorator(f):
         @wraps(f)
