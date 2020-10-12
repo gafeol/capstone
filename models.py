@@ -54,7 +54,7 @@ class Movie(db.Model):
         return {
             'id': self.id,
             'title': self.title,
-            'release_date': self.release_date
+            'release_date': self.release_date.strftime("%Y-%m-%d %H:%M:%S.%f"),
         }
 
     def __repr__(self):
