@@ -1,5 +1,5 @@
 import os
-from sqlalchemy import Column, String, Integer
+from sqlalchemy import Column, String, Integer, ForeignKey, Table
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import json
@@ -30,10 +30,20 @@ def setup_db(app, database_path=database_path):
     Migrate(app, db)
 
 
+association_table = Table('Association', db.Model.metadata,
+                          Column('movie_id', Integer, ForeignKey('movie.id')),
+                          Column('actor_id', Integer, ForeignKey('actor.id'))
+                          )
+
+
 class Movie(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)
     release_date = db.Column(db.DateTime, nullable=False)
+    actors = db.relationship(
+        'Actor',
+        secondary=association_table,
+        back_populates="movies")
 
     def __init__(self, title, release_date):
         self.title = title
@@ -55,6 +65,14 @@ class Movie(db.Model):
             'id': self.id,
             'title': self.title,
             'release_date': self.release_date.strftime("%Y-%m-%d %H:%M:%S.%f"),
+            'actors': [actor.shortJson() for actor in self.actors]
+        }
+    
+    def shortJson(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'release_date': self.release_date.strftime("%Y-%m-%d %H:%M:%S.%f"),
         }
 
     def __repr__(self):
@@ -66,6 +84,10 @@ class Actor(db.Model):
     name = db.Column(db.String(200), nullable=False)
     age = db.Column(db.Integer, nullable=True)
     gender = db.Column(db.String, nullable=True)
+    movies = db.relationship(
+        'Movie',
+        secondary=association_table,
+        back_populates="actors")
 
     def __init__(self, name, age, gender):
         self.name = name
@@ -88,8 +110,18 @@ class Actor(db.Model):
             'id': self.id,
             'name': self.name,
             'age': self.age,
-            'gender': self.gender
+            'gender': self.gender,
+            'movies': [movie.shortJson() for movie in self.movies]
         }
+    
+    def shortJson(self):
+        return {
+            'id': self.id,
+            'title': self.name,
+            'age': self.age,
+            'gender': self.gender,
+        }
+
 
     def __repr__(self):
         return json.dumps(self.json())
