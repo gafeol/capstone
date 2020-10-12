@@ -60,6 +60,8 @@ class Movie(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    """ JSON representation of an object """
+
     def json(self):
         return {
             'id': self.id,
@@ -67,7 +69,11 @@ class Movie(db.Model):
             'release_date': self.release_date.strftime("%Y-%m-%d %H:%M:%S.%f"),
             'actors': [actor.shortJson() for actor in self.actors]
         }
-    
+
+    """ Shorter JSON representation of an object
+        Does not include information about the actors the objects are linked with
+    """
+
     def shortJson(self):
         return {
             'id': self.id,
@@ -105,6 +111,8 @@ class Actor(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    """ JSON representation of an object """
+
     def json(self):
         return {
             'id': self.id,
@@ -113,7 +121,11 @@ class Actor(db.Model):
             'gender': self.gender,
             'movies': [movie.shortJson() for movie in self.movies]
         }
-    
+
+    """ Shorter JSON representation of an object
+        Does not include information about the movies the objects are linked with
+    """
+
     def shortJson(self):
         return {
             'id': self.id,
@@ -121,7 +133,6 @@ class Actor(db.Model):
             'age': self.age,
             'gender': self.gender,
         }
-
 
     def __repr__(self):
         return json.dumps(self.json())

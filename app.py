@@ -78,8 +78,6 @@ def get_movies():
         print(sys.exc_info())
         abort(422)
 
-# POST routes
-
 
 @APP.route('/actors', methods=['POST'])
 @requires_auth('add:actor')
@@ -115,8 +113,6 @@ def create_movie():
     except BaseException:
         print(sys.exc_info())
         abort(422)
-
-# PATCH routes
 
 
 @APP.route('/actors', methods=['PATCH'])
@@ -165,8 +161,6 @@ def patch_movie():
     except BaseException:
         print(sys.exc_info())
         abort(422)
-
-# DELETE routes
 
 
 @APP.route('/actors/<int:id>', methods=['DELETE'])
@@ -219,9 +213,7 @@ def login():
 
 @APP.route('/logout')
 def logout():
-    # Clear session stored data
     session.clear()
-    # Redirect user to logout endpoint
     params = {
         'returnTo': url_for(
             'home',
@@ -233,8 +225,6 @@ def logout():
 @APP.route('/callback')
 def callback_handling():
     return render_template('dashboard.html')
-
-# Error handlers
 
 
 @APP.errorhandler(400)

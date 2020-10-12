@@ -1,6 +1,9 @@
 # Capstone project
 
-## Set up
+## Motivation for project
+
+
+## Project set up
 
 To install the project dependencies, run `pip install -r requirements.txt`.
 
@@ -20,12 +23,6 @@ flask run
 
 Shall start the project in Debug mode.
 
-## TODO
+## API
 
-Fazer request GET para 
-https://dev-ingcvevp.us.auth0.com/authorize?audience=http://localhost:5000&response_type=token&client_id=1N0NSObu0BtQ0sMh6CRDcVRnzbqLc1ls&redirect_uri=http://localhost:5000/callback
-https://dev-ingcvevp.us.auth0.com/authorize?audience=http://127.0.0.1:5000/&response_type=token&client_id=1N0NSObu0BtQ0sMh6CRDcVRnzbqLc1ls&redirect_uri=http://localhost:5000/callback
-
-## DEBUG
-
-- If OAuth is not doing the authentication correctly, check if the AUTH0_SECRET is really accessible by the code.
+## RBAC 

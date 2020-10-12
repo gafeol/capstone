@@ -9,7 +9,6 @@ AUTH0_DOMAIN = 'dev-ingcvevp.us.auth0.com'
 ALGORITHMS = ['RS256']
 API_AUDIENCE = 'http://127.0.0.1:5000/'
 
-# AuthError Exception
 '''
 AuthError Exception
 A standardized way to communicate auth failure modes
@@ -22,7 +21,6 @@ class AuthError(Exception):
         self.status_code = status_code
 
 
-# Auth Header
 def get_token_auth_header():
     auth = request.headers.get('Authorization')
     if auth is None:
