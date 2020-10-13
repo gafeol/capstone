@@ -227,3 +227,20 @@ Email: admin@admin.com
 Password: v8RKK3si3zvwQUz
 
 The required tokens for each role were added on the [.flaskenv](.flaskenv) file, but if, for some reason, they have already expired you can use the application web interface to generate new tokens using the sample credentials specified.
+
+
+## Secrets
+
+A `.flaskenv` file should be created containing the following secrets:
+
+```bash
+AUTH0_SECRET=xxxxxxxxxxxxxxxxx
+EXECUTIVE_TOKEN=xxxxxxxxxxxxxxxxxx
+DIRECTOR_TOKEN=xxxxxxxxxxxxxxxxxxx
+ASSISTANT_TOKEN=xxxxxxxxxxxxxxxxxxxx
+FLASK_SECRET_KEY=xxxxxxxxxxxxxx
+AUTH0_DOMAIN=xxxxxxxxxxxxxxxxxxxxx
+API_AUDIENCE=xxxxxxxxxxxxxxxxxxxxxx
+CLIENT_ID=xxxxxxxxxxxxxxxxxxx
+```
+
